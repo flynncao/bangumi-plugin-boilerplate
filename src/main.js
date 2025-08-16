@@ -47,7 +47,21 @@ import Storage from './storage/index'
           const title = userSettings.copyJapaneseTitle
             ? $('h1.nameSingle').find('a').text().trim()
             : $('h1.nameSingle').find('a').attr('title')
-          navigator.clipboard.writeText(title)
+
+          try {
+            navigator.clipboard.writeText(title)
+          } catch (error) {
+            console.error('Failed to copy text:', error)
+            // Fallback for browsers that do not support the Clipboard API
+            const textArea = document.createElement('textarea')
+            textArea.value = title
+            textArea.style.position = 'fixed' // Prevent scrolling to bottom of page in MS Edge.
+            document.body.append(textArea)
+            textArea.focus()
+            textArea.select()
+            document.execCommand('copy')
+            textArea.remove()
+          }
 
           butterup.toast({
             title: `已复制${userSettings.copyJapaneseTitle ? '日文名' : '中文名'}到剪切板！`,
