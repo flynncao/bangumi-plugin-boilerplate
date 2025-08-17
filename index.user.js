@@ -1,7 +1,7 @@
 
 // ==UserScript==
 // @name        bangumi-copy-title
-// @version     0.0.5
+// @version     0.0.5.1
 // @description Copy bangumi title to clipboard
 // @author      Flynn Cao
 // @updateURL   https://flynncao.github.io/bangumi-plugin-boilerplate/index.user.js
