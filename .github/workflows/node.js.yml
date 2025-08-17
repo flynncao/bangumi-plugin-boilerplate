@@ -2,9 +2,9 @@ name: Node.js CI + Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "copy-title" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "copy-title" ]
 
 
 jobs:
