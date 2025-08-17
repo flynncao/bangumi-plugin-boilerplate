@@ -1,4 +1,6 @@
-
+.bct-control{
+  margin-right: 2px;
+}
 
 .bct-button {
   /* --button-size: 2rem;
@@ -10,7 +12,7 @@
   cursor: pointer;
   color: #000;
   transform: translateY(4px);
-  padding: 2px 5px;
+  padding: 2px 2px;
   border: 1px solid transparent;
 }
 
@@ -46,7 +48,7 @@
 	filter:invert(1)
 }
 
-.bct-checkbox {
+.bct-title-language {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -63,4 +65,18 @@
 
 .bct-checkbox span:last-child {
 	margin-left: 2px;
+}
+
+.bct-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 20px;
+  cursor: pointer;
+  color:#555;
+  border-radius: 5px;
+  border-color: #ccc;
+  transform: translateY(-2px);
+  padding-top:1px
 }

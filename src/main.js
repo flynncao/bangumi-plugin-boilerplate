@@ -1,5 +1,5 @@
 import { createButton } from './components/layouts/button'
-import { createCheckbox } from './components/layouts/checkbox'
+import { createSelect } from './components/layouts/select'
 import { BGM_SUBJECT_REGEX } from './constants/index'
 import butterupStyles from './static/css/butterup.css'
 import styles from './static/css/styles.css'
@@ -14,12 +14,12 @@ import Storage from './storage/index'
 
   // Storage
   Storage.init({
-    copyJapaneseTitle: false,
+    titleCode: 'main',
     showText: true,
   })
 
   const userSettings = {
-    copyJapaneseTitle: Storage.get('copyJapaneseTitle') || false,
+    titleCode: Storage.get('titleCode') || false,
     showText: Storage.get('showText') || true,
   }
 
@@ -42,11 +42,34 @@ import Storage from './storage/index'
         id: 'bct-copy-title',
         text: '复制',
         icon: Icons.copy,
-        className: 'bct-button',
+        className: 'bct-button bct-control',
         onClick: () => {
-          const title = userSettings.copyJapaneseTitle
-            ? $('h1.nameSingle').find('a').text().trim()
-            : $('h1.nameSingle').find('a').attr('title')
+          const titleMapping = {
+            main: {
+              label: '主标题',
+              method: () => {
+                return $('h1.nameSingle').find('a').text().trim()
+              },
+            },
+            zh: {
+              label: '中文名',
+              method: () => {
+                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(0)
+                return $(wrapper.contents()[1]).text()
+              },
+            },
+            romaji: {
+              label: '罗马音',
+              method: () => {
+                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(1)
+                return $(wrapper.contents()[1]).text()
+              },
+            },
+          }
+
+          const title = titleMapping[userSettings.titleCode]
+            ? titleMapping[userSettings.titleCode].method()
+            : titleMapping.main.method()
 
           try {
             navigator.clipboard.writeText(title)
@@ -64,7 +87,7 @@ import Storage from './storage/index'
           }
 
           butterup.toast({
-            title: `已复制${userSettings.copyJapaneseTitle ? '日文名' : '中文名'}到剪切板！`,
+            title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
             location: 'top-right',
             dismissable: false,
             type: 'success',
@@ -78,19 +101,20 @@ import Storage from './storage/index'
   )
 
   $('h1.nameSingle').append(
-    createCheckbox(
-      {
-        id: 'bct-hide-plain-comments',
-        label: '日文名',
-        className: 'bct-checkbox',
-        onChange: (e) => {
-          userSettings.copyJapaneseTitle = e.target.checked
-          Storage.set('copyJapaneseTitle', userSettings.copyJapaneseTitle)
-        },
-        checked: userSettings.copyJapaneseTitle,
-        disabled: false,
+    createSelect({
+      id: 'bct-title-language',
+      options: [
+        { value: 'main', label: '主标题' },
+        { value: 'zh', label: '中文名' },
+        { value: 'romaji', label: '罗马音' },
+      ],
+      className: 'bct-select bct-control',
+      onChange: (e) => {
+        const selectedValue = e.target.value
+        userSettings.titleCode = selectedValue
+        Storage.set('titleCode', userSettings.titleCode)
       },
-      userSettings,
-    ),
+      selectedValue: userSettings.titleCode || 'main',
+    }),
   )
 })()
