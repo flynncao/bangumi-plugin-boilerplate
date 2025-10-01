@@ -11,10 +11,11 @@ export function createButton(
     Object.prototype.hasOwnProperty.call(userSettings, 'showText') &&
     userSettings.showText === true
   ) {
-    // add a text named "显示标题' following the svg icon with font size  21px 21px
-    const textNode = document.createTextNode(text)
     const span = document.createElement('span')
-    span.append(textNode)
+    if (text) {
+      const textNode = document.createTextNode(text)
+      span.append(textNode)
+    }
     button.append(span)
   }
 

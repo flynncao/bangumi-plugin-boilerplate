@@ -1,4 +1,5 @@
 import { createButton } from './components/layouts/button'
+import { createMovableController } from './components/layouts/controller'
 import { createSelect } from './components/layouts/select'
 import { BGM_SUBJECT_REGEX } from './constants/index'
 import butterupStyles from './static/css/butterup.css'
@@ -36,7 +37,9 @@ import Storage from './storage/index'
   // Render a toast notification in the top-right corner of the screen
   console.log('butterup', butterup)
 
-  $('h1.nameSingle').append(
+  const controller = createMovableController()
+
+  controller.append(
     createButton(
       {
         id: 'bct-copy-title',
@@ -88,7 +91,7 @@ import Storage from './storage/index'
 
           butterup.toast({
             title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
-            location: 'top-right',
+            location: 'top-center',
             dismissable: false,
             type: 'success',
             duration: 2500,
@@ -100,7 +103,7 @@ import Storage from './storage/index'
     ),
   )
 
-  $('h1.nameSingle').append(
+  controller.append(
     createSelect({
       id: 'bct-title-language',
       options: [
@@ -117,4 +120,6 @@ import Storage from './storage/index'
       selectedValue: userSettings.titleCode || 'main',
     }),
   )
+
+  $('body').append(controller)
 })()
