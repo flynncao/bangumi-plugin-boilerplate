@@ -2,9 +2,9 @@ name: Node.js CI + Deploy
 
 on:
   push:
-    branches: [ "copy-title" ]
+    branches: [ "copy-title", "copy-title-flat"]
   pull_request:
-    branches: [ "copy-title" ]
+    branches: [ "copy-title", "copy-title-flat"]
 
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
            path: dist
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        if : github.ref == 'refs/heads/copy-title'
+        if : github.ref == 'refs/heads/copy-title' || github.ref == 'refs/heads/copy-title-flat'
         with: 
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: 'github-pages'
