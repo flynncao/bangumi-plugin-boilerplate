@@ -24,6 +24,31 @@ import Storage from './storage/index'
     showText: Storage.get('showText') || true,
   }
 
+  console.log('navigator.userAgent', navigator.userAgent)
+  const IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth <= 768
+
+  // Hooks
+  let controllerOffsetLeft = 0
+  const CONTROLLER_ELEMENTS_GAP = 10
+  const onDOMReady = () => {
+    const title = document.querySelector('h1.nameSingle>a')
+    if (title) {
+      // get the width of the title element
+      const elements = document.querySelectorAll('h1.nameSingle > *')
+      let totalWidth = 0
+      elements.forEach((el) => {
+        totalWidth += el.getBoundingClientRect().width
+      })
+      controllerOffsetLeft = totalWidth
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onDOMReady)
+  } else {
+    onDOMReady()
+  }
+
   // Layout and Events
   const injectStyles = () => {
     const styleEl = document.createElement('style')
@@ -34,8 +59,6 @@ import Storage from './storage/index'
     document.head.append(butterupStyleEl)
   }
   injectStyles()
-  // Render a toast notification in the top-right corner of the screen
-  console.log('butterup', butterup)
 
   const controller = createMovableController()
 
@@ -91,7 +114,7 @@ import Storage from './storage/index'
 
           butterup.toast({
             title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
-            location: 'top-center',
+            location: IS_MOBILE ? 'top-center' : 'top-right',
             dismissable: false,
             type: 'success',
             duration: 2500,
@@ -102,6 +125,30 @@ import Storage from './storage/index'
       userSettings,
     ),
   )
+
+  let controllerOriginLeft = 0,
+    controllerOriginTop = 0
+  if ($('div#headerNeue2').length > 0) {
+    controllerOriginTop += $('div#headerNeue2').outerHeight(true) || 53
+  }
+  $('h1.nameSingle').each(function () {
+    const style = getComputedStyle(this)
+    controllerOriginLeft += Number.parseFloat(style.paddingLeft) || 0
+    controllerOriginLeft += Number.parseFloat(style.marginLeft) || 0
+    controllerOriginTop += (Number.parseFloat(style.marginTop) || 0) / 2
+  })
+  if (controllerOffsetLeft > 0) {
+    controllerOriginLeft = controllerOriginLeft + controllerOffsetLeft + CONTROLLER_ELEMENTS_GAP
+  }
+
+  if (window.innerWidth <= 768) {
+    controller.style.right = `${CONTROLLER_ELEMENTS_GAP}px`
+    const val = `${($('div#headerNeue2').outerHeight(true) || 50) + ($('h1.nameSingle').outerHeight(true) || 46) + ($('div.subjectNav').outerHeight(true) || 39) + 5}px`
+    controller.style.top = val
+  } else {
+    controller.style.left = `${controllerOriginLeft}px`
+    controller.style.top = `${controllerOriginTop}px`
+  }
 
   controller.append(
     createSelect({
