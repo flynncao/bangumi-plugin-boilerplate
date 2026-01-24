@@ -1,7 +1,7 @@
 
 // ==UserScript==
 // @name        bangumi-copy-title
-// @version     0.0.5.1
+// @version     0.0.3
 // @description Copy bangumi title to clipboard
 // @author      Flynn Cao
 // @updateURL   https://flynncao.github.io/bangumi-plugin-boilerplate/index.user.js
@@ -41,42 +41,37 @@ function createButton(
   return button
 }
 
-function createSelect(
-  { id, options, className, onChange, selectedValue, disabled = false },
+function createCheckbox(
+  { id, label, className, onChange, checked, disabled = false },
   userSettings = {},
 ) {
-  // Create the select element
-  const selectEl = document.createElement('select');
-  selectEl.id = id;
-  selectEl.className = className;
+  // Create the checkbox container
+  const labelEl = document.createElement('label');
+  labelEl.className = className;
 
-  // Populate the select with options
-  options.forEach((option) => {
-    const optionEl = document.createElement('option');
-    optionEl.value = option.value;
-    optionEl.textContent = option.label;
-    if (option.value === selectedValue) {
-      optionEl.selected = true;
-    }
-    selectEl.append(optionEl);
-  });
+  // Create the checkbox input
+  const inputEl = document.createElement('input');
+  inputEl.type = 'checkbox';
+  inputEl.id = id;
+  inputEl.checked = checked;
 
-  // Add event listener for change
-  selectEl.addEventListener('change', onChange);
-  selectEl.disabled = disabled;
+  // Create the custom checkmark span
+  const checkmarkEl = document.createElement('span');
+  checkmarkEl.className = 'bct-checkmark';
 
-  // If userSettings has showText, append a text node
-  if (
-    Object.prototype.hasOwnProperty.call(userSettings, 'showText') &&
-    userSettings.showText === true
-  ) {
-    const textNode = document.createTextNode(' 选择');
-    const span = document.createElement('span');
-    span.append(textNode);
-    selectEl.append(span);
-  }
+  // Create the label text span
+  const textSpan = document.createElement('span');
+  textSpan.textContent = label;
 
-  return selectEl
+  // Append elements to the label
+  labelEl.append(inputEl);
+  labelEl.append(checkmarkEl);
+  labelEl.append(textSpan);
+
+  inputEl.addEventListener('change', onChange);
+  inputEl.disabled = disabled;
+
+  return labelEl
 }
 
 const BGM_SUBJECT_REGEX =
@@ -86,7 +81,7 @@ const STORAGE_NAMESPACE = 'BangumiCopyTitle';
 
 var butterupStyles = ".toaster{\n\tfont-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial,\n\tNoto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;\n\tbox-sizing: border-box;\n\tpadding: 0;\n\tmargin: 0;\n\tlist-style: none;\n\toutline: none;\n\tz-index: 999999999;\n\tposition: fixed;\n\tpadding: 5px;\n}\n\n@keyframes spin {\nfrom {\n\ttransform: rotate(0deg);\n}\nto {\n\ttransform: rotate(360deg);\n}\n}\n\n.animate-spin {\nanimation: spin 1s linear infinite;\n}\n\n.toaster.bottom-right{\n\tbottom: 20px;\n\tright: 20px;\n}\n\n.toaster.bottom-left{\n\tbottom: 20px;\n\tleft: 20px;\n}\n\n.toaster.top-right{\n\ttop: 20px;\n\tright: 20px;\n}\n\n.toaster.top-left{\n\ttop: 20px;\n\tleft: 20px;\n}\n\n.toaster.bottom-center{\n\tbottom: 20px;\n\tleft: 50%;\n\ttransform: translateX(-50%);\n}\n\n.toaster.top-center{\n\ttop: 20px;\n\tleft: 50%;\n\ttransform: translateX(-50%);\n}\n\n.toaster.top-center ol.rack{\n\tflex-direction: column-reverse;\n}\n\n.toaster.top-left ol.rack{\n\tflex-direction: column-reverse;\n}\n\n.toaster.top-right ol.rack{\n\tflex-direction: column-reverse;\n}\n\n.toaster.bottom-center ol.rack{\n\tflex-direction: column;\n}\n\n.toaster.bottom-left ol.rack{\n\tflex-direction: column;\n}\n\n.toaster.bottom-right ol.rack{\n\tflex-direction: column;\n}\n\nol.rack{\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\t/* reverse the list order so that the newest items are at the top */\n\tdisplay: flex;\n}\n\nol.rack li{\n\tmargin-bottom: 16px;\n}\n\n/* Stacked Toasts Enabled */\nol.rack.upperstack li{\n\tmargin-bottom: -35px;\n\ttransition: all 0.3s ease-in-out;\n}\n\nol.rack.upperstack li:hover{\n\tmargin-bottom: 16px;\n\tscale: 1.03;\n\ttransition: all 0.3s ease-in-out;\n}\n\nol.rack.lowerstack li{\n\tmargin-top: -35px;\n}\n\n\nol.rack.lowerstack{\n margin-bottom: 0px;\n}\n\n.butteruptoast{\n\tborder-radius: 8px;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tfont-size: 13px;\n\tdisplay: flex;\n\tpadding: 16px;\n\tborder: 1px solid hsl(0, 0%, 93%);\n\tbackground-color: white;\n\tgap: 6px;\n\tcolor: #282828;\n\twidth: 325px;\n\ttransition: all 0.3s ease-in-out;\n}\n\n.butteruptoast.dismissable{\n\tcursor: pointer;\n}\n\n.butteruptoast .icon{\n\tdisplay: flex;\n\talign-items: start;\n\tflex-direction: column;\n}\n\n.butteruptoast .icon svg{\n\twidth: 20px;\n\theight: 20px;\n\tfill: #282828;\n\tpadding: 0;\n\tmargin: 0;\n}\n\n.butteruptoast .notif .desc{\n\tdisplay: flex;\n\tflex-direction: column;\n\tgap: 2px;\n\tpadding: 0;\n\tmargin: 0;\n}\n\n.butteruptoast .notif .desc .title{\n\tfont-weight: 600;\n\tline-height: 1.5;\n\tpadding: 0;\n\tmargin: 0;\n\n}\n\n.butteruptoast .notif .desc .message{\n\tfont-weight: 400;\n\tline-height: 1.4;\n\tpadding: 0;\n\tmargin: 0;\n}\n\n.butteruptoast.success{\n\tbackground-color: #ebfef2;\n\tcolor: hsl(140, 100%, 27%);\n\tborder: solid 1px hsl(145, 92%, 91%);\n}\n\n.butteruptoast.success .icon svg{\n\tfill: hsl(140, 100%, 27%);\n}\n\n.butteruptoast.error .icon svg{\n\tfill: hsl(0, 100%, 27%);\n}\n\n.butteruptoast.warning .icon svg{\n\tfill: hsl(50, 100%, 27%);\n}\n\n.butteruptoast.info .icon svg{\n\tfill: hsl(210, 100%, 27%);\n}\n\n.butteruptoast.error{\n\tbackground-color: #fef0f0;\n\tcolor: hsl(0, 100%, 27%);\n\tborder: solid 1px hsl(0, 92%, 91%);\n}\n\n.butteruptoast.warning{\n\tbackground-color: #fffdf0;\n\tcolor: hsl(50, 100%, 27%);\n\tborder: solid 1px hsl(50, 92%, 91%);\n}\n\n.butteruptoast.info{\n\tbackground-color: #f0f8ff;\n\tcolor: hsl(210, 100%, 27%);\n\tborder: solid 1px hsl(210, 92%, 91%);\n}\n\n/* Buttons */\n.toast-buttons{\n\tdisplay: flex;\n\tgap: 8px;\n\twidth: 100%;\n\talign-items: center;\n\tflex-direction: row;\n\tmargin-top: 16px;\n}\n\n.toast-buttons .toast-button.primary{\n\tbackground-color: #282828;\n\tcolor: white;\n\tpadding: 8px 16px;\n\tborder-radius: 4px;\n\tcursor: pointer;\n\tborder: none;\n\twidth: 100%;\n}\n\n.toast-buttons .toast-button.secondary{\n\tbackground-color: #f0f8ff;\n\tcolor: hsl(210, 100%, 27%);\n\tborder: solid 1px hsl(210, 92%, 91%);\n\tpadding: 8px 16px;\n\tborder-radius: 4px;\n\tcursor: pointer;\n\twidth: 100%;\n}\n\n/* Success toast buttons */\n.butteruptoast.success .toast-button.primary {\n\tbackground-color: hsl(145, 63%, 42%);\n\tcolor: white;\n}\n\n.butteruptoast.success .toast-button.secondary {\n\tbackground-color: hsl(145, 45%, 90%);\n\tcolor: hsl(145, 63%, 32%);\n\tborder: solid 1px hsl(145, 63%, 72%);\n}\n\n/* Error toast buttons */\n.butteruptoast.error .toast-button.primary {\n\tbackground-color: hsl(354, 70%, 54%);\n\tcolor: white;\n}\n\n.butteruptoast.error .toast-button.secondary {\n\tbackground-color: hsl(354, 30%, 90%);\n\tcolor: hsl(354, 70%, 44%);\n\tborder: solid 1px hsl(354, 70%, 74%);\n}\n\n/* Warning toast buttons */\n.butteruptoast.warning .toast-button.primary {\n\tbackground-color: hsl(45, 100%, 51%);\n\tcolor: hsl(45, 100%, 15%);\n}\n\n.butteruptoast.warning .toast-button.secondary {\n\tbackground-color: hsl(45, 100%, 96%);\n\tcolor: hsl(45, 100%, 31%);\n\tborder: solid 1px hsl(45, 100%, 76%);\n}\n\n/* Info toast buttons */\n.butteruptoast.info .toast-button.primary {\n\tbackground-color: hsl(207, 90%, 54%);\n\tcolor: white;\n}\n\n.butteruptoast.info .toast-button.secondary {\n\tbackground-color: hsl(207, 90%, 94%);\n\tcolor: hsl(207, 90%, 34%);\n\tborder: solid 1px hsl(207, 90%, 74%);\n}\n\n\n\n\n/* Entrance animations */\n/*  Note: These animations need to differ depending on the location of the toaster\n\tElements that are in the top should slide and fade down from the top\n\tElemennts that are in the bottom should slide and fade up from the bottom\n*/\n\n.toastUp{\n\tanimation: slideUp 0.5s ease-in-out;\n\tanimation-fill-mode: forwards;\n}\n\n.toastDown{\n\tanimation: slideDown 0.5s ease-in-out;\n\tanimation-fill-mode: forwards;\n}\n\n@keyframes slideDown {\n\t0% {\n\t\t\topacity: 0;\n\t\t\ttransform: translateY(-100%);\n\t}\n\t100% {\n\t\t\topacity: 1;\n\t\t\ttransform: translateY(0);\n\t}\n}\n\n@keyframes slideUp {\n\t0% {\n\t\t\topacity: 0;\n\t\t\ttransform: translateY(100%);\n\t}\n\t100% {\n\t\t\topacity: 1;\n\t\t\ttransform: translateY(0);\n\t}\n}\n\n.fadeOutToast{\n\tanimation: fadeOut 0.3s ease-in-out;\n\tanimation-fill-mode: forwards;\n}\n\n@keyframes fadeOut {\n\t0% {\n\t\t\topacity: 1;\n\t}\n\t100% {\n\t\t\topacity: 0;\n\t}\n}\n\n/*  Additional Styles\n\tThese styles are an alternative to the standard option. A user can choose to use these\n\tstyles by setting the theme: variable per toast\n*/\n\n/* Glass */\n\n.butteruptoast.glass{\n\tbackground-color: rgba(255, 255, 255, 0.42) !important;\n\tbackdrop-filter: blur(10px);\n\t-webkit-backdrop-filter: blur(10px);\n\tborder: none;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tcolor: #282828;\n}\n\n.butteruptoast.glass.success{\n\tbackground-color: rgba(235, 254, 242, 0.42) !important;\n\tbackdrop-filter: blur(10px);\n\t-webkit-backdrop-filter: blur(10px);\n\tborder: none;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tcolor: hsl(140, 100%, 27%);\n}\n\n.butteruptoast.glass.error{\n\tbackground-color: rgba(254, 240, 240, 0.42) !important;\n\tbackdrop-filter: blur(10px);\n\t-webkit-backdrop-filter: blur(10px);\n\tborder: none;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tcolor: hsl(0, 100%, 27%);\n}\n\n.butteruptoast.glass.warning{\n\tbackground-color: rgba(255, 253, 240, 0.42) !important;\n\tbackdrop-filter: blur(10px);\n\t-webkit-backdrop-filter: blur(10px);\n\tborder: none;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tcolor: hsl(50, 100%, 27%);\n}\n\n.butteruptoast.glass.info{\n\tbackground-color: rgba(240, 248, 255, 0.42) !important;\n\tbackdrop-filter: blur(10px);\n\t-webkit-backdrop-filter: blur(10px);\n\tborder: none;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tcolor: hsl(210, 100%, 27%);\n}\n\n/* brutalist */\n.butteruptoast.brutalist{\n\tborder-radius: 0px;\n\tbox-shadow: 0 4px 12px #0000001a;\n\tborder: solid 2px #282828;\n\tfont-size: 13px;\n\talign-items: center;\n\tdisplay: flex;\n\tpadding: 16px;\n\tbackground-color: white;\n\tgap: 6px;\n\tcolor: #282828;\n\twidth: 325px;\n}\n\n.butteruptoast.brutalist.success{\n\tbackground-color: #ebfef2;\n\tcolor: hsl(140, 100%, 27%);\n\tborder: solid 2px hsl(140, 100%, 27%);\n}\n\n.butteruptoast.brutalist.error{\n\tbackground-color: #fef0f0;\n\tcolor: hsl(0, 100%, 27%);\n\tborder: solid 2px hsl(0, 100%, 27%);\n}\n\n.butteruptoast.brutalist.warning{\n\tbackground-color: #fffdf0;\n\tcolor: hsl(50, 100%, 27%);\n\tborder: solid 2px hsl(50, 100%, 27%);\n}\n\n.butteruptoast.brutalist.info{\n\tbackground-color: #f0f8ff;\n\tcolor: hsl(210, 100%, 27%);\n\tborder: solid 2px hsl(210, 100%, 27%);\n}\n";
 
-var styles = ".bct-control{\n  margin-right: 2px;\n}\n\n.bct-button {\n  /* --button-size: 2rem;\n  width: var(--button-size);\n  height: var(--button-size); */\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  color: #000;\n  transform: translateY(4px);\n  padding: 2px 2px;\n  border: 1px solid transparent;\n}\n\n[data-theme=\"dark\"] .bct-button {\n\tcolor: #f5f5f5;\n} \n\n.bct-button:hover {\n\tborder: 1px solid lightgray;\n\tborder-radius: 4px;\n\ttransition: all 0.2s ease-in-out;\n}\n\n.bct-button svg {\n  width: 100%;\n  height: 100%;\n  /* Let the button control the size */\n  flex: 1;\n}\n\n.bct-button svg {\n  max-width: 21px;\n  max-height: 21px;\n}\n\n\n.bct-button span{\n\tfont-size: 12px!important;\n\tfont-weight: normal!important;\n\tpadding-right: 4px!important;\n}\n[data-theme=\"dark\"] .bct-button svg {\n\tfilter:invert(1)\n}\n\n.bct-title-language {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  height: 20px;\n  cursor: pointer;\n}\n\n.bct-checkbox .bct-checkmark {\n  /* You had no styles for this in the original, but leave this as a placeholder */\n\n}\n\n\n.bct-checkbox span:last-child {\n\tmargin-left: 2px;\n}\n\n.bct-select {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  height: 20px;\n  cursor: pointer;\n  color:#555;\n  border-radius: 5px;\n  border-color: #ccc;\n  transform: translateY(-2px);\n  padding-top:1px\n}\n";
+var styles = "\n\n.bct-button {\n  /* --button-size: 2rem;\n  width: var(--button-size);\n  height: var(--button-size); */\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  color: #000;\n  transform: translateY(4px);\n  padding: 2px 5px;\n  border: 1px solid transparent;\n}\n\n[data-theme=\"dark\"] .bct-button {\n\tcolor: #f5f5f5;\n} \n\n.bct-button:hover {\n\tborder: 1px solid lightgray;\n\tborder-radius: 4px;\n\ttransition: all 0.2s ease-in-out;\n}\n\n.bct-button svg {\n  width: 100%;\n  height: 100%;\n  /* Let the button control the size */\n  flex: 1;\n}\n\n.bct-button svg {\n  max-width: 21px;\n  max-height: 21px;\n}\n\n\n.bct-button span{\n\tfont-size: 12px!important;\n\tfont-weight: normal!important;\n\tpadding-right: 4px!important;\n}\n[data-theme=\"dark\"] .bct-button svg {\n\tfilter:invert(1)\n}\n\n.bct-checkbox {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  height: 20px;\n  cursor: pointer;\n}\n\n.bct-checkbox .bct-checkmark {\n  /* You had no styles for this in the original, but leave this as a placeholder */\n\n}\n\n\n.bct-checkbox span:last-child {\n\tmargin-left: 2px;\n}\n";
 
 // Forked from https://github.com/dgtlss/butterup
 const butterup = {
@@ -474,12 +469,12 @@ class Storage {
 
   // Storage
   Storage.init({
-    titleCode: 'main',
+    copyJapaneseTitle: false,
     showText: true,
   });
 
   const userSettings = {
-    titleCode: Storage.get('titleCode') || false,
+    copyJapaneseTitle: Storage.get('copyJapaneseTitle') || false,
     showText: Storage.get('showText') || true,
   };
 
@@ -501,52 +496,15 @@ class Storage {
         id: 'bct-copy-title',
         text: '复制',
         icon: Icons.copy,
-        className: 'bct-button bct-control',
+        className: 'bct-button',
         onClick: () => {
-          const titleMapping = {
-            main: {
-              label: '主标题',
-              method: () => {
-                return $('h1.nameSingle').find('a').text().trim()
-              },
-            },
-            zh: {
-              label: '中文名',
-              method: () => {
-                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(0);
-                return $(wrapper.contents()[1]).text()
-              },
-            },
-            romaji: {
-              label: '罗马音',
-              method: () => {
-                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(1);
-                return $(wrapper.contents()[1]).text()
-              },
-            },
-          };
-
-          const title = titleMapping[userSettings.titleCode]
-            ? titleMapping[userSettings.titleCode].method()
-            : titleMapping.main.method();
-
-          try {
-            navigator.clipboard.writeText(title);
-          } catch (error) {
-            console.error('Failed to copy text:', error);
-            // Fallback for browsers that do not support the Clipboard API
-            const textArea = document.createElement('textarea');
-            textArea.value = title;
-            textArea.style.position = 'fixed'; // Prevent scrolling to bottom of page in MS Edge.
-            document.body.append(textArea);
-            textArea.focus();
-            textArea.select();
-            document.execCommand('copy');
-            textArea.remove();
-          }
+          const title = userSettings.copyJapaneseTitle
+            ? $('h1.nameSingle').find('a').text().trim()
+            : $('h1.nameSingle').find('a').attr('title');
+          navigator.clipboard.writeText(title);
 
           butterup.toast({
-            title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
+            title: `已复制${userSettings.copyJapaneseTitle ? '日文名' : '中文名'}到剪切板！`,
             location: 'top-right',
             dismissable: false,
             type: 'success',
@@ -560,20 +518,19 @@ class Storage {
   );
 
   $('h1.nameSingle').append(
-    createSelect({
-      id: 'bct-title-language',
-      options: [
-        { value: 'main', label: '主标题' },
-        { value: 'zh', label: '中文名' },
-        { value: 'romaji', label: '罗马音' },
-      ],
-      className: 'bct-select bct-control',
-      onChange: (e) => {
-        const selectedValue = e.target.value;
-        userSettings.titleCode = selectedValue;
-        Storage.set('titleCode', userSettings.titleCode);
+    createCheckbox(
+      {
+        id: 'bct-hide-plain-comments',
+        label: '日文名',
+        className: 'bct-checkbox',
+        onChange: (e) => {
+          userSettings.copyJapaneseTitle = e.target.checked;
+          Storage.set('copyJapaneseTitle', userSettings.copyJapaneseTitle);
+        },
+        checked: userSettings.copyJapaneseTitle,
+        disabled: false,
       },
-      selectedValue: userSettings.titleCode || 'main',
-    }),
+      userSettings,
+    ),
   );
 })();
