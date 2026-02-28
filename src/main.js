@@ -1,7 +1,7 @@
 import { createButton } from './components/layouts/button'
 import { createMovableController } from './components/layouts/controller'
 import { createSelect } from './components/layouts/select'
-import { BGM_SUBJECT_REGEX } from './constants/index'
+import { BGM_CHARACTER_REGEX, BGM_PERSON_REGEX, BGM_SUBJECT_REGEX } from './constants/index'
 import butterupStyles from './static/css/butterup.css'
 import styles from './static/css/styles.css'
 import butterup from './static/js/butterup'
@@ -9,7 +9,11 @@ import Icons from './static/svg/index'
 import Storage from './storage/index'
 ;(async function () {
   // Validate if the current page is a Bangumi subject page
-  if (!BGM_SUBJECT_REGEX.test(location.href)) {
+  const isValidPage =
+    BGM_SUBJECT_REGEX.test(location.href) ||
+    BGM_CHARACTER_REGEX.test(location.href) ||
+    BGM_PERSON_REGEX.test(location.href)
+  if (!isValidPage) {
     return
   }
 
@@ -80,15 +84,19 @@ import Storage from './storage/index'
             zh: {
               label: '中文名',
               method: () => {
-                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(0)
-                return $(wrapper.contents()[1]).text()
+                const wrapper = $('#bangumiInfo .infobox_container #infobox li').has(
+                  '.tip:contains("中文名")',
+                )
+                return $(wrapper.contents()[1]).text().trim()
               },
             },
             romaji: {
               label: '罗马音',
               method: () => {
-                const wrapper = $('#bangumiInfo .infobox_container #infobox li').eq(1)
-                return $(wrapper.contents()[1]).text()
+                const wrapper = $('#bangumiInfo .infobox_container #infobox li').has(
+                  '.tip:contains("罗马名"), .tip:contains("罗马字")',
+                )
+                return $(wrapper.contents()[1]).text().trim()
               },
             },
           }
@@ -112,14 +120,27 @@ import Storage from './storage/index'
             textArea.remove()
           }
 
-          butterup.toast({
-            title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
-            location: IS_MOBILE ? 'top-center' : 'top-right',
-            dismissable: false,
-            type: 'success',
-            duration: 2500,
-            icon: true,
-          })
+          // if text is empty or only contains whitespace, show error toast
+          if (!title || /^\s*$/.test(title)) {
+            butterup.toast({
+              title: '未找到可复制的标题！',
+              message: '请确保页面上有标题信息，或已安装对应的插件。',
+              location: IS_MOBILE ? 'top-center' : 'top-right',
+              dismissable: false,
+              type: 'error',
+              duration: 2500,
+              icon: true,
+            })
+          } else {
+            butterup.toast({
+              title: `已复制${userSettings.titleCode ? titleMapping[userSettings.titleCode].label : '主标题'}到剪切板！`,
+              location: IS_MOBILE ? 'top-center' : 'top-right',
+              dismissable: false,
+              type: 'success',
+              duration: 2500,
+              icon: true,
+            })
+          }
         },
       },
       userSettings,
