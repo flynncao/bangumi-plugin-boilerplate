@@ -16,26 +16,13 @@
   box-sizing: border-box;
 }
 
-.bangumi-copy-title-flow-header{
-  width: 20px;
-  height: 100%;
-  /* background: #f5f5f5; */
-  background-color: #f9f9f9;
-  border-radius: 10px 0px 0 10px;
-  cursor: move;
-}
-
 [data-theme="dark"] .bangumi-copy-title-flow{
   background-color: #2d2e2f;
 }
 
-
-[data-theme="dark"] .bangumi-copy-title-flow-header {
-  background-color: #353535;
-}
-
 .bct-control{
-  display: inline-block;
+  display: inline-flex; /* Base display mode */
+  align-items: center;
   margin-right: 2px;
 }
 
@@ -53,18 +40,31 @@
 	color: #f5f5f5;
 } 
 
+/* Specific styles - override base when needed */
+.bangumi-copy-title-flow-header {
+  /* This is independent, doesn't need .bct-control */
+  width: 20px;
+  height: 100%;
+  background-color: #f9f9f9;
+  border-radius: 10px 0px 0 10px;
+  cursor: move;
+}
+
+[data-theme="dark"] .bangumi-copy-title-flow-header {
+  background-color: #353535;
+}
+
 .bct-button {
-  /* --button-size: 2rem;
-  width: var(--button-size);
-  height: var(--button-size); */
-  display: inline-flex;
-  align-items: center;
+  /* Inherits from .bct-control, but can override */
   justify-content: center;
   cursor: pointer;
   color: #000;
-  padding: 2px 2px;
+  padding: 2px 2px; 
   border: 1px solid transparent;
+  /* Don't redefine display here unless you need to override */
 }
+
+
 
 .bct-button:hover {
 	border: 1px solid lightgray;
