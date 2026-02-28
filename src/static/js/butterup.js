@@ -1,4 +1,5 @@
 // Forked from https://github.com/dgtlss/butterup
+/* eslint-disable */
 const butterup = {
   options: {
     maxToasts: 5, // Max number of toasts that can be on the screen at once
@@ -350,3 +351,4 @@ const butterup = {
 }
 
 export default butterup
+/* eslint-enable */

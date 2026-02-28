@@ -2,10 +2,9 @@ name: Node.js CI + Deploy
 
 on:
   push:
-    branches: [ "copy-title" ]
+    branches: [copy-title]
   pull_request:
-    branches: [ "copy-title" ]
-
+    branches: [copy-title]
 
 jobs:
   build-and-deploy:
@@ -15,19 +14,19 @@ jobs:
       pages: write
       id-token: write
     concurrency:
-      group: 'pages'
+      group: pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with: 
+        with:
           version: 8
       - name: Use Node.js Active LTS
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: pnpm
       - name: Install dependencies (yarn)
         run: pnpm i
       - name: Build assets
@@ -35,11 +34,11 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-           name: 'github-pages'
-           path: dist
+          name: github-pages
+          path: dist
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        if : github.ref == 'refs/heads/copy-title'
-        with: 
+        if: github.ref == 'refs/heads/copy-title'
+        with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: 'github-pages'
+          artifact_name: github-pages

@@ -21,6 +21,7 @@ export default sxzz(
         'unicorn/prefer-array-some': 'off',
         'vars-on-top': 'off',
         'import/no-default-export': 'off',
+        '@eslint-community/eslint-comments/no-unlimited-disable': 'off',
       },
     },
   ],
