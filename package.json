@@ -13,8 +13,8 @@
   "scripts": {
     "dev": "rollup -c -w --environment BUILD:development",
     "build": "rollup -c --environment BUILD:production",
-    "format": "prettier --write .",
-    "lint": "eslint --fix .",
+    "format": "prettier --write *.{js,ts,css,md,json}",
+    "lint": "eslint --fix *.{js,ts}",
     "cm": "node scripts/bump-version.js"
   },
   "devDependencies": {
