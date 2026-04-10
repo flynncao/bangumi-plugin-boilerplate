@@ -1,6 +1,6 @@
 {
   "name": "bangumi-plugin-boilerplate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A boilerplate for Bangumi plugins.",
   "type": "module",
   "keywords": [
