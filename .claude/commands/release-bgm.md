@@ -20,7 +20,7 @@ Execute the complete release workflow for the Bangumi userscript.
 2. **Version Bump**
 
    ```bash
-   pnpm cm
+   pnpm cm --no-push
    ```
 
    This increments the patch version, updates userscript metadata, commits, tags, and pushes.
