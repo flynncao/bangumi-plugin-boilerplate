@@ -18,6 +18,7 @@ import { resolve } from 'node:path'
 import simpleGit from 'simple-git'
 
 const dryRun = process.argv.includes('--dry-run')
+const noPush = process.argv.includes('--no-push')
 
 if (dryRun) {
   console.log('[DRY RUN] No changes will be made')
@@ -58,15 +59,16 @@ if (!dryRun) {
   await git.addTag(`v${newVersion}`)
 
   // Push commit and tag
-  await git.push('origin', 'main')
-  await git.pushTags('origin')
+  if (!noPush) {
+    await git.push('origin', 'main')
+    await git.pushTags('origin')
 
-  console.log(`Version ${newVersion} released successfully!`)
+    console.log(`Version ${newVersion} released successfully!`)
+  } else {
+    console.log('[NO PUSH] Changes committed and tagged locally, but not pushed to origin.')
+  }
 } else {
   console.log('[DRY RUN] Would update:')
   console.log(`  - package.json: ${currentVersion} -> ${newVersion}`)
   console.log(`  - src/metadata.json: ${currentVersion} -> ${newVersion}`)
-  console.log(`  - Create commit: "chore(release): bump version to ${newVersion}"`)
-  console.log(`  - Create tag: v${newVersion}`)
-  console.log('  - Push commit and tag to origin')
 }
