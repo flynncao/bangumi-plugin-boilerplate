@@ -22,7 +22,7 @@
     "@sxzz/eslint-config": "^6.0.2",
     "concurrently": "^9.1.2",
     "eslint": "^9.22.0",
-    "lint-staged": "^15.2.7",
+    "lint-staged": "^15.2.11",
     "prettier": "^3.3.3",
     "rollup": "^4.34.8",
     "rollup-plugin-import-css": "^3.5.8",
