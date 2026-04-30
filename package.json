@@ -24,7 +24,7 @@
     "eslint": "^9.22.0",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
-    "rollup": "^4.34.8",
+    "rollup": "^4.60.2",
     "rollup-plugin-import-css": "^3.5.8",
     "rollup-plugin-userscript-metadata": "^2.0.1",
     "simple-git": "^3.27.0",
