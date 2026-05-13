@@ -20,7 +20,7 @@
   "devDependencies": {
     "@rollup/plugin-strip": "^3.0.4",
     "@sxzz/eslint-config": "^6.0.2",
-    "concurrently": "^9.1.2",
+    "concurrently": "^9.2.1",
     "eslint": "^9.22.0",
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
