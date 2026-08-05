@@ -1,3 +1,4 @@
+
 // ==UserScript==
 // @name        bangumi-copy-title
 // @version     0.0.3
