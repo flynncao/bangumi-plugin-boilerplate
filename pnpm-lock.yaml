@@ -21,7 +21,7 @@ importers:
         specifier: ^9.22.0
         version: 9.22.0(supports-color@8.1.1)
       lint-staged:
-        specifier: ^15.2.11
+        specifier: ^15.5.2
         version: 15.5.2(supports-color@8.1.1)
       prettier:
         specifier: ^3.3.3
