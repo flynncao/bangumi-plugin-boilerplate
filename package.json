@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-strip": "^3.0.4",
-    "@sxzz/eslint-config": "^6.2.0",
+    "@sxzz/eslint-config": "^8.5.0",
     "concurrently": "^9.2.4",
     "eslint": "^9.39.5",
     "lint-staged": "^15.5.2",
