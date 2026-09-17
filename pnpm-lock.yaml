@@ -27,7 +27,7 @@ importers:
         specifier: ^3.9.6
         version: 3.9.6
       rollup:
-        specifier: ^4.63.2
+        specifier: ^4.63.3
         version: 4.63.3
       rollup-plugin-import-css:
         specifier: ^3.5.8
