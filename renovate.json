@@ -2,5 +2,58 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>flynncao/renovate-config"
-  ]
+  ],
+  "automerge": false,
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "configMigration": false,
+  "vulnerabilityAlerts": {
+    "automerge": false,
+    "vulnerabilityFixStrategy": "highest"
+  },
+  "packageRules": [
+    {
+      "description": "Level 2: open PRs for major updates",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": true,
+      "automerge": false
+    },
+    {
+      "description": "Level 2: suppress other updates unless fixing a High or Critical vulnerability",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "pinDigest",
+        "digest",
+        "lockFileMaintenance",
+        "rollback",
+        "bump",
+        "replacement"
+      ],
+      "enabled": false,
+      "matchJsonata": [
+        "$not(isVulnerabilityAlert = true and vulnerabilitySeverity in ['HIGH', 'CRITICAL'])"
+      ]
+    }
+  ],
+  "npm": {
+    "lockFileMaintenance": {
+      "enabled": false
+    },
+    "packageRules": [
+      {
+        "matchPackageNames": [
+          "*"
+        ],
+        "automerge": false
+      }
+    ]
+  },
+  "circleci": {
+    "automerge": false
+  }
 }
