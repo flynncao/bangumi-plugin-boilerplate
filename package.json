@@ -27,7 +27,7 @@
     "rollup": "^4.63.3",
     "rollup-plugin-import-css": "^3.5.8",
     "rollup-plugin-userscript-metadata": "^2.0.1",
-    "simple-git": "^3.36.0",
+    "simple-git": "^4.0.2",
     "simple-git-hooks": "^2.14.0"
   },
   "simple-git-hooks": {
